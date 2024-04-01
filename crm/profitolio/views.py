@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from .forms import CreateUserForm, LoginForm
+from .forms import CreateUserForm, LoginForm, CreateRecordForm, UpdateRecordForm
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from .models import Record
+from django.contrib import messages
 
 # Create your views here.
 
@@ -53,6 +54,33 @@ def dashboard(request):
     context = {'records': my_records}
     return render(request, 'profitolio/dashboard.html', context = context)
 
+# - Create a record 
+
+@login_required(login_url='my-login')
+def create_record(request):
+
+    form = CreateRecordForm()
+
+    if request.method == "POST":
+
+        form = CreateRecordForm(request.POST)
+
+        if form.is_valid():
+            cp = form.cleaned_data['buy_price']
+            sp = form.cleaned_data['sell_price']
+            returns = ((sp - cp) / cp) * 100
+
+            instance = form.save(commit=False)
+            instance.returns = returns #calculating returns and saving here
+            instance.save()
+            
+            messages.success(request, "Your record was created!")
+
+            return redirect("dashboard")
+
+    context = {'form': form}
+
+    return render(request, 'profitolio/create-record.html', context=context)
 
 #Logout
 def user_logout(request):

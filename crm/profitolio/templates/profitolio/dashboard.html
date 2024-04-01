@@ -5,7 +5,7 @@
     <h1>Welcome to the dashboard page, {{user}}!</h1>
     <hr>
     
-    <a class = "btn btn-outline-primary btn-sm" href = "{% url 'dashboard' %}">
+    <a class = "btn btn-outline-primary btn-sm" href = "{% url 'create-record' %}">
         Create a new record
     </a>
     <hr>
@@ -37,7 +37,7 @@
                     <td> {{record.buy_price}}</td>
                     <td> {{record.quantity}}</td>
                     <td> {{record.sell_price}}</td>
-                    <td> {{record.returns}}</td>
+                    <td> {{record.returns|floatformat:2}}</td>
                     <td> {{record.buy_date}}</td>
                     <td> {{record.sell_date}}</td>
                     <td> {{record.id}}</td>
