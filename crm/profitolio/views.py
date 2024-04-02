@@ -82,6 +82,58 @@ def create_record(request):
 
     return render(request, 'profitolio/create-record.html', context=context)
 
+# update a record
+@login_required(login_url='my-login')
+def update_record(request, pk):
+    
+    record = Record.objects.get(id = pk)
+    form = UpdateRecordForm(instance = record)
+
+    if request.method == "POST":
+
+        form = UpdateRecordForm(request.POST, instance = record)
+
+        if form.is_valid():
+            cp = form.cleaned_data['buy_price']
+            sp = form.cleaned_data['sell_price']
+            returns = ((sp - cp) / cp) * 100
+
+            instance = form.save(commit=False)
+            instance.returns = returns #calculating returns and saving here
+            instance.save()
+            
+            messages.success(request, "Your record was created!")
+
+            return redirect("dashboard")
+
+    context = {'form': form}
+
+    return render(request, 'profitolio/update-record.html', context=context)
+
+# - Read / View a singular record
+
+@login_required(login_url='my-login')
+def singular_record(request, pk):
+
+    all_records = Record.objects.get(id=pk)
+
+    context = {'record':all_records}
+
+    return render(request, 'profitolio/view-record.html', context=context)
+
+# - Delete a record
+
+@login_required(login_url='my-login')
+def delete_record(request, pk):
+
+    record = Record.objects.get(id=pk)
+
+    record.delete()
+
+    messages.success(request, "Your record was deleted!")
+
+    return redirect("dashboard")
+
 #Logout
 def user_logout(request):
     auth.logout(request)
