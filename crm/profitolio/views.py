@@ -22,6 +22,7 @@ def register(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, "Account created successfully!")
             return redirect('my-login')
 
     context = {'form': form}
@@ -41,6 +42,7 @@ def my_login(request):
 
             if user is not None:
                 auth.login(request, user)
+                messages.success(request, "You have logged in successfully!")
                 return redirect('dashboard')
     
     context = {'form2': form}
@@ -102,7 +104,7 @@ def update_record(request, pk):
             instance.returns = returns #calculating returns and saving here
             instance.save()
             
-            messages.success(request, "Your record was created!")
+            messages.success(request, "Your record was updated!")
 
             return redirect("dashboard")
 
@@ -137,5 +139,6 @@ def delete_record(request, pk):
 #Logout
 def user_logout(request):
     auth.logout(request)
+    messages.success(request, "You are logged out!")
     return redirect("my-login")
 
